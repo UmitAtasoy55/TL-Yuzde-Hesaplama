@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yüzde / İndirim Hesaplama</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: radial-gradient(circle at top, #3b82f6 0, #111827 45%, #020617 100%);
+            color: #f9fafb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 16px;
+        }
+
+        .kutu {
+            width: 100%;
+            max-width: 360px;
+            background: linear-gradient(145deg, #111827, #020617);
+            padding: 22px 20px 24px 20px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            text-align: center;
+        }
+
+        label { display: block; margin-bottom: 4px; font-size: 13px; }
+
+        input[type="number"] {
+            width: 100%; padding: 10px 12px; border-radius: 12px;
+            border: 1px solid #4b5563; background-color: #020617;
+            color: #fff; margin-bottom: 12px; font-size: 15px;
+        }
+
+        .butonlar {
+            display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;
+        }
+
+        button {
+            padding: 12px 18px; border-radius: 999px; border: none;
+            cursor: pointer; font-weight: 600;
+            transition: 0.15s;
+        }
+
+        #btnYuzde { background: #2563eb; color: white; font-size: 20px; }
+        #btnIndirim { background: #10b981; color: white; }
+        #btnTemizle { background: #374151; color: #e5e7eb; }
+
+        button:hover { transform: scale(1.05); }
+        button:active { transform: scale(0.97); }
+
+        .sonuc-kutu {
+            margin-top: 12px; padding: 12px;
+            border-radius: 14px; font-size: 15px;
+            opacity: 0; transform: translateY(6px);
+            transition: 0.25s;
+        }
+
+        .goster { opacity: 1; transform: translateY(0); }
+        .ok { background: #065f46; box-shadow: 0 10px 20px rgba(16,185,129,.4); }
+        .hata { background: #7f1d1d; box-shadow: 0 10px 20px rgba(239,68,68,.4); }
+    </style>
+</head>
+<body>
+
+<div class="kutu">
+    <h2>Yüzde / İndirim Hesaplama</h2>
+
+    <label>Tutar (TL)</label>
+    <input id="sayi" type="number" step="0.01" placeholder="Örn: 50000">
+
+    <label>Yüzde (%)</label>
+    <input id="yuzde" type="number" step="0.01" placeholder="Örn: 5">
+
+    <div class="butonlar">
+        <button id="btnYuzde" onclick="hesaplaYuzde()">=</button>
+        <button id="btnIndirim" onclick="hesaplaIndirim()">İndirim Yap</button>
+        <button id="btnTemizle" onclick="temizle()">Temizle</button>
+    </div>
+
+    <div id="sonucAlani" class="sonuc-kutu"></div>
+</div>
+
+<script>
+    function f(n) {
+        if (Number.isInteger(n)) return n.toLocaleString('tr-TR');
+        return n.toLocaleString('tr-TR', {maximumFractionDigits: 2});
+    }
+
+    function hata(metin) {
+        let s = document.getElementById("sonucAlani");
+        s.textContent = metin;
+        s.className = "sonuc-kutu hata goster";
+    }
+
+    function hesaplaYuzde() {
+        let sayi = parseFloat(document.getElementById("sayi").value.replace(",", "."));
+        let yuzde = parseFloat(document.getElementById("yuzde").value.replace(",", "."));
+        let s = document.getElementById("sonucAlani");
+
+        if (isNaN(sayi) || isNaN(yuzde)) return hata("Geçerli sayı girin.");
+
+        let sonuc = sayi * yuzde / 100;
+
+        s.innerHTML = `Sonuç: ${f(sayi)} sayısının %${f(yuzde)} = <b>${f(sonuc)}</b>`;
+        s.className = "sonuc-kutu ok goster";
+    }
+
+    function hesaplaIndirim() {
+        let sayi = parseFloat(document.getElementById("sayi").value.replace(",", "."));
+        let yuzde = parseFloat(document.getElementById("yuzde").value.replace(",", "."));
+        let s = document.getElementById("sonucAlani");
+
+        if (isNaN(sayi) || isNaN(yuzde)) return hata("Geçerli sayı girin.");
+
+        let indirim = sayi * yuzde / 100;
+        let yeni = sayi - indirim;
+
+        s.innerHTML =
+            `Tutar: <b>${f(sayi)} TL</b><br>` +
+            `İndirim: <b>%${f(yuzde)}</b><br>` +
+            `İndirim Miktarı: <b>${f(indirim)} TL</b><br>` +
+            `Yeni Fiyat: <b>${f(yeni)} TL</b>`;
+        s.className = "sonuc-kutu ok goster";
+    }
+
+    function temizle() {
+        document.getElementById("sayi").value = "";
+        document.getElementById("yuzde").value = "";
+        let s = document.getElementById("sonucAlani");
+        s.textContent = "";
+        s.className = "sonuc-kutu";
+    }
+</script>
+
+</body>
+</html>
